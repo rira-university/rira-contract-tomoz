@@ -5,5 +5,5 @@ import "../ownership/Ownable.sol";
 contract SelfDestructible is Ownable {
     function destroy() public onlyOwner  {
         selfdestruct(owner());
-    }    
+    }
 }
