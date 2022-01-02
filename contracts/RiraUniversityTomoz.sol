@@ -30,12 +30,22 @@ contract RiraUniversityTomoz is KIP17Full("Rirauniversity TOMOZ", "TOMOZ"), KIP1
         emit SetBaseURI(msg.sender, uri);
     }
 
+    //for _INTERFACE_ID_KIP17_MINTABLE, not recommended
+    function mint(address to, uint256 tokenId) public onlyMinter returns (bool) {
+        require(tokenId > mintIndex, "tokenId must be greater than mintIndex.");
+        require(tokenId <= mintLimit, "tokenId must be less than mintLimit.");
+        _mint(to, tokenId);
+        return true;
+    }
+
+    //Mint with auto increment Ids
     function mint(address to) public onlyMinter returns (bool) {
         require(mintIndex < mintLimit, "Mint limit exceeded");
         mintIndex = mintIndex.add(1);
         return super.mint(to, mintIndex);
     }
 
+    //Batch mint with auto increment Ids
     function batchMint(address to, uint256 amount) external onlyMinter {
         for (uint256 i = 0; i < amount; i ++) {
             mint(to);
