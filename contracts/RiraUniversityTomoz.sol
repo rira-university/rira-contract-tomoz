@@ -1,26 +1,49 @@
 pragma solidity ^0.5.6;
-pragma experimental ABIEncoderV2;
 
 import "hardhat/console.sol";
+import "./rira-utils/Strings.sol";
 import "./klaytn-contracts/token/KIP17/KIP17Full.sol";
 import "./klaytn-contracts/token/KIP17/KIP17Mintable.sol";
-import "./klaytn-contracts/token/KIP17/KIP17MetadataMintable.sol";
-import "./klaytn-contracts/token/KIP17/KIP17Burnable.sol";
 import "./klaytn-contracts/token/KIP17/KIP17Pausable.sol";
 
-contract RiraUniversityTomoz is KIP17Full("Rirauniversity TOMOZ", "TOMOZ"), KIP17Mintable, KIP17MetadataMintable, KIP17Burnable, KIP17Pausable {
+contract RiraUniversityTomoz is KIP17Full("Rirauniversity TOMOZ", "TOMOZ"), KIP17Mintable, KIP17Pausable {
 
-    function batchMint(address to, uint256[] calldata tokenId) external onlyMinter {
-        for (uint256 i = 0; i < tokenId.length; i++) {
-            mint(to, tokenId[i]);
+    event SetBaseURI(address indexed minter, string uri);
+
+    string private _baseURI;
+    uint256 public mintLimit = 10000;
+    uint256 public mintIndex = 0;
+
+    //return baseURI + token id
+    function tokenURI(uint256 tokenId) public view returns (string memory) {
+        require(_exists(tokenId), "KIP17Metadata: URI query for nonexistent token");
+        return string(abi.encodePacked(_baseURI, Strings.fromUint256(tokenId)));
+    }
+
+    function baseURI() public view returns (string memory) {
+        return _baseURI;
+    }
+
+    // Set IPFS Gateway endpoint
+    function setBaseURI(string memory uri) public onlyMinter {
+        _baseURI = uri;
+        emit SetBaseURI(msg.sender, uri);
+    }
+
+    function mint(address to) public onlyMinter returns (bool) {
+        require(mintIndex < mintLimit, "Mint limit exceeded");
+        mintIndex = mintIndex.add(1);
+        return super.mint(to, mintIndex);
+    }
+
+    function batchMint(address to, uint256 amount) external onlyMinter {
+        for (uint256 i = 0; i < amount; i ++) {
+            mint(to);
         }
     }
 
-    function batchMintWithTokenURI(address to, uint256[] calldata tokenId, string[] calldata tokenURI) external onlyMinter {
-        for (uint256 i = 0; i < tokenId.length; i++) {
-            mintWithTokenURI(to, tokenId[i], tokenURI[i]);
-        }
-    }
+    //TODO
+    //BATCH TRANSFER
 
     function exists(uint256 tokenId) public view returns (bool) {
         return _exists(tokenId);
@@ -28,9 +51,5 @@ contract RiraUniversityTomoz is KIP17Full("Rirauniversity TOMOZ", "TOMOZ"), KIP1
 
     function tokensOfOwner(address owner) public view returns (uint256[] memory) {
         return _tokensOfOwner(owner);
-    }
-
-    function setTokenURI(uint256 tokenId, string memory uri) public onlyMinter {
-        _setTokenURI(tokenId, uri);
     }
 }
