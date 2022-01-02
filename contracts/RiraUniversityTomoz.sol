@@ -34,8 +34,11 @@ contract RiraUniversityTomoz is KIP17Full("Rirauniversity TOMOZ", "TOMOZ"), KIP1
         return super.mint(to, tokenId);
     }
 
-    //TODO
-    //BATCH MINT
+    function batchMint(address to, uint256[] calldata tokenId) external onlyMinter {
+        for (uint256 i = 0; i < tokenId.length; i ++) {
+            mint(to, tokenId[i]);
+        }
+    }
 
     //TODO
     //BATCH TRANSFER
