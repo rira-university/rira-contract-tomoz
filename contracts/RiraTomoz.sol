@@ -6,7 +6,7 @@ import "./klaytn-contracts/token/KIP17/KIP17Full.sol";
 import "./klaytn-contracts/token/KIP17/KIP17Mintable.sol";
 import "./klaytn-contracts/token/KIP17/KIP17Pausable.sol";
 
-contract RiraUniversityTomoz is KIP17Full("Rira Institute of Technology TOMOZ", "TOMO"), KIP17Mintable, KIP17Pausable {
+contract RiraTomoz is KIP17Full("Rira Institute of Technology TOMOZ", "TOMO"), KIP17Mintable, KIP17Pausable {
 
     event SetBaseURI(address indexed minter, string uri);
 
