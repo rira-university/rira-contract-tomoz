@@ -10,7 +10,7 @@ contract RiraTomoz is KIP17Full("Rira Institute of Technology TOMOZ", "TOMO"), K
 
     event SetBaseURI(address indexed minter, string uri);
 
-    string private _baseURI;
+    string private _baseURI = "https://IPFS_Gateway_endpoint";
     uint256 public mintLimit = 10000;
 
     //return baseURI + token id

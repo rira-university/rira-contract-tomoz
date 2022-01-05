@@ -1,19 +1,34 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 
-describe("Greeter", function () {
-  it("Should return the new greeting once it's changed", async function () {
-    const Greeter = await ethers.getContractFactory("Greeter");
-    const greeter = await Greeter.deploy("Hello, world!");
-    await greeter.deployed();
+describe("NFT Contract", function () {
+  it("DeployAndMint", async function () {
+    const [minter] = await ethers.getSigners();
+    const ipfsEndpoint = "https://mock-ipfs-endpoint/metadata/"
 
-    expect(await greeter.greet()).to.equal("Hello, world!");
+    const RiraTomoz = await ethers.getContractFactory("RiraTomoz");
+    const tomoz = await RiraTomoz.deploy();
+    await tomoz.deployed();
 
-    const setGreetingTx = await greeter.setGreeting("Hola, mundo!");
+    //set ipfs endpoint
+    await tomoz.setBaseURI(ipfsEndpoint);
 
-    // wait until the transaction is mined
-    await setGreetingTx.wait();
+    //mint 1 TOMO
+    await tomoz.mint(minter.address, 1);
+  
+    //mint duplicate
+    //await expect(await tomoz.mint(minter.address, 1)).to.revertedWith("KIP17: token already minted");
 
-    expect(await greeter.greet()).to.equal("Hola, mundo!");
+    //let batchMintData: number[] = [];
+    //for(let i = 2; i ++; i <= 2000){
+    //    batchMintData.push(i);
+    //}
+
+    //mint 1999 TOMOZ
+    //const batchMintTx = await tomoz.batchMint(minter.address, batchMintData);
+    //await batchMintTx.wait();
+
+    //expect(await tomoz.tokenURI(2000)).to.equal(ipfsEndpoint + "2000");
+
   });
 });
