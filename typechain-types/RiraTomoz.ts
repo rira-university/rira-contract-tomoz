@@ -48,6 +48,7 @@ export interface RiraTomozInterface extends utils.Interface {
     "mintLimit()": FunctionFragment;
     "setApprovalForAll(address,bool)": FunctionFragment;
     "isMinter(address)": FunctionFragment;
+    "batchTransfer(address,uint256[])": FunctionFragment;
     "tokenURI(uint256)": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
   };
@@ -130,6 +131,10 @@ export interface RiraTomozInterface extends utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "isMinter", values: [string]): string;
   encodeFunctionData(
+    functionFragment: "batchTransfer",
+    values: [string, BigNumberish[]]
+  ): string;
+  encodeFunctionData(
     functionFragment: "tokenURI",
     values: [BigNumberish]
   ): string;
@@ -200,6 +205,10 @@ export interface RiraTomozInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "isMinter", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "batchTransfer",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "tokenURI", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "isApprovedForAll",
@@ -441,6 +450,12 @@ export interface RiraTomoz extends BaseContract {
 
     isMinter(account: string, overrides?: CallOverrides): Promise<[boolean]>;
 
+    batchTransfer(
+      to: string,
+      tokenId: BigNumberish[],
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     tokenURI(
       tokenId: BigNumberish,
       overrides?: CallOverrides
@@ -575,6 +590,12 @@ export interface RiraTomoz extends BaseContract {
 
   isMinter(account: string, overrides?: CallOverrides): Promise<boolean>;
 
+  batchTransfer(
+    to: string,
+    tokenId: BigNumberish[],
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   tokenURI(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
   isApprovedForAll(
@@ -691,6 +712,12 @@ export interface RiraTomoz extends BaseContract {
     ): Promise<void>;
 
     isMinter(account: string, overrides?: CallOverrides): Promise<boolean>;
+
+    batchTransfer(
+      to: string,
+      tokenId: BigNumberish[],
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     tokenURI(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
@@ -889,6 +916,12 @@ export interface RiraTomoz extends BaseContract {
 
     isMinter(account: string, overrides?: CallOverrides): Promise<BigNumber>;
 
+    batchTransfer(
+      to: string,
+      tokenId: BigNumberish[],
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     tokenURI(
       tokenId: BigNumberish,
       overrides?: CallOverrides
@@ -1040,6 +1073,12 @@ export interface RiraTomoz extends BaseContract {
     isMinter(
       account: string,
       overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    batchTransfer(
+      to: string,
+      tokenId: BigNumberish[],
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     tokenURI(

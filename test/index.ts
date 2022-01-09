@@ -1,11 +1,13 @@
+import { Provider } from "@ethersproject/abstract-provider";
 import { expect } from "chai";
-import { ethers } from "hardhat";
+import { ethers, waffle } from "hardhat";
 
 describe("NFT Contract", function () {
   it("DeployAndMint", async function () {
-    const [minter] = await ethers.getSigners();
+    const provider = waffle.provider;
+    //const [minter] = await ethers.getSigners();
+    const [minter, user] = provider.getWallets();
     const ipfsEndpoint = "https://mock-ipfs-endpoint/metadata/"
-
     const RiraTomoz = await ethers.getContractFactory("RiraTomoz");
     const tomoz = await RiraTomoz.deploy();
     await tomoz.deployed();
@@ -17,18 +19,35 @@ describe("NFT Contract", function () {
     await tomoz.mint(minter.address, 1);
   
     //mint duplicate
-    //await expect(await tomoz.mint(minter.address, 1)).to.revertedWith("KIP17: token already minted");
+    await expect(tomoz.mint(minter.address, 1)).to.be.revertedWith("KIP17: token already minted");
 
-    //let batchMintData: number[] = [];
-    //for(let i = 2; i ++; i <= 2000){
-    //    batchMintData.push(i);
-    //}
+    //set token ids for batchmint (2~2000)
+    let tokenIds: number[] = [];
+    let endId  = 10000;
+    for(let i = 2; i <= endId; i++){
+      tokenIds.push(i);
 
-    //mint 1999 TOMOZ
-    //const batchMintTx = await tomoz.batchMint(minter.address, batchMintData);
-    //await batchMintTx.wait();
+      if((i % 100 == 0) || i == endId){
+        console.log("batch minting : "+ tokenIds[0] + " ~ " + + tokenIds[tokenIds.length - 1] + " (size:" + tokenIds.length + ")");
+        const batchMintTx = await tomoz.batchMint(minter.address, tokenIds);
+        await batchMintTx.wait();
+        tokenIds = []; //clear buffer
+      }
+    }
 
-    //expect(await tomoz.tokenURI(2000)).to.equal(ipfsEndpoint + "2000");
+    expect(await tomoz.tokenURI(10000)).to.be.equal(ipfsEndpoint + "10000");
+    await expect(tomoz.mint(minter.address, 0)).to.be.revertedWith("Mint limit exceeded");
+    await expect(tomoz.tokenURI(0)).to.be.revertedWith("KIP17Metadata: URI query for nonexistent token");
+    await expect(tomoz.tokenURI(10001)).to.be.revertedWith("KIP17Metadata: URI query for nonexistent token");
 
+    //test batchTrasnfer
+    for(let i = 1; i <= 50; i++){
+      tokenIds.push(i);
+    }
+    const batchTransferTx = await tomoz.batchTransfer(user.address, tokenIds);
+    await batchTransferTx.wait();
+
+    expect(await tomoz.balanceOf(minter.address)).to.be.equal(9950);
+    expect(await tomoz.balanceOf(user.address)).to.be.equal(50);
   });
 });

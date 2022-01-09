@@ -40,8 +40,11 @@ contract RiraTomoz is KIP17Full("Rira Institute of Technology TOMOZ", "TOMO"), K
         }
     }
 
-    //TODO
-    //BATCH TRANSFER
+    function batchTransfer(address to, uint256[] calldata tokenId) external {
+        for (uint256 i = 0; i < tokenId.length; i ++) {
+            transferFrom(msg.sender, to, tokenId[i]);
+        }
+    }
 
     function exists(uint256 tokenId) public view returns (bool) {
         return _exists(tokenId);
