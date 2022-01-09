@@ -1,4 +1,3 @@
-import { Provider } from "@ethersproject/abstract-provider";
 import { expect } from "chai";
 import { ethers, waffle } from "hardhat";
 
@@ -35,6 +34,7 @@ describe("TOMOZ Contract", function () {
       }
     }
 
+    //check mint
     expect(await tomoz.tokenURI(10000)).to.be.equal(ipfsEndpoint + "10000");
     await expect(tomoz.mint(minter.address, 0)).to.be.revertedWith("Mint limit exceeded");
     await expect(tomoz.tokenURI(0)).to.be.revertedWith("KIP17Metadata: URI query for nonexistent token");
