@@ -2,8 +2,8 @@ import { Provider } from "@ethersproject/abstract-provider";
 import { expect } from "chai";
 import { ethers, waffle } from "hardhat";
 
-describe("NFT Contract", function () {
-  it("DeployAndMint", async function () {
+describe("TOMOZ Contract", function () {
+  it("Deploy, Mint, Batch", async function () {
     const provider = waffle.provider;
     //const [minter] = await ethers.getSigners();
     const [minter, user] = provider.getWallets();
