@@ -1,2 +1,4 @@
 # rira-contract-tomoz
-Smart contract for Rira Institute of Technology TOMOZ
+Gas-Saving Variable On-Chain Metadata NFT
+
+Working..
