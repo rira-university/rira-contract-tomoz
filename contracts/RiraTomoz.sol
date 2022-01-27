@@ -8,25 +8,33 @@ import "./klaytn-contracts/token/KIP17/KIP17Pausable.sol";
 
 contract RiraTomoz is KIP17Full("Rira Institute of Technology TOMOZ", "TOMO"), KIP17Mintable, KIP17Pausable {
 
-    event SetBaseURI(address indexed minter, string uri);
+    event SetVariableBaseUri(address indexed minter, string uri);
+    event SetTomoUriIndex(uint256 tokenId, uint256 index);
+    mapping (uint256 => string) private _variableBaseUris;
+    mapping (uint256 => uint256) private _tomoUriIndex;
 
-    string private _baseURI = "https://IPFS_Gateway_endpoint";
     uint256 public mintLimit = 10000;
 
     //return baseURI + token id
     function tokenURI(uint256 tokenId) public view returns (string memory) {
         require(_exists(tokenId), "KIP17Metadata: URI query for nonexistent token");
-        return string(abi.encodePacked(_baseURI, Strings.fromUint256(tokenId)));
+        string memory _uri = _variableBaseUris[_tomoUriIndex[tokenId]];
+        return string(abi.encodePacked(_uri, Strings.fromUint256(tokenId)));
     }
 
-    function baseURI() public view returns (string memory) {
-        return _baseURI;
+    function variableBaseUri(uint256 index) public view returns (string memory) {
+        return _variableBaseUris[index];
     }
 
-    // Set IPFS Gateway endpoint
-    function setBaseURI(string memory uri) public onlyMinter {
-        _baseURI = uri;
-        emit SetBaseURI(msg.sender, uri);
+    function setVariableBaseUri(uint256 index, string memory uri) public onlyMinter {
+        _variableBaseUris[index] = uri;
+        emit SetVariableBaseUri(msg.sender, uri);
+    }
+
+    function setTomoUriIndex(uint256 tokenId, uint256 index) public onlyMinter {
+        require(_exists(tokenId), "KIP17Metadata: URI query for nonexistent token");
+        _tomoUriIndex[tokenId] = index;
+        emit SetTomoUriIndex(tokenId, index);
     }
 
     function mint(address to, uint256 tokenId) public onlyMinter returns (bool) {

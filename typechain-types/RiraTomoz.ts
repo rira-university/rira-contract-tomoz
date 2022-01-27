@@ -23,20 +23,21 @@ export interface RiraTomozInterface extends utils.Interface {
     "name()": FunctionFragment;
     "getApproved(uint256)": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
+    "setVariableBaseUri(uint256,string)": FunctionFragment;
     "totalSupply()": FunctionFragment;
     "transferFrom(address,address,uint256)": FunctionFragment;
+    "variableBaseUri(uint256)": FunctionFragment;
     "tokenOfOwnerByIndex(address,uint256)": FunctionFragment;
     "unpause()": FunctionFragment;
     "mint(address,uint256)": FunctionFragment;
     "safeTransferFrom(address,address,uint256)": FunctionFragment;
     "batchMint(address,uint256[])": FunctionFragment;
     "isPauser(address)": FunctionFragment;
+    "setTomoUriIndex(uint256,uint256)": FunctionFragment;
     "exists(uint256)": FunctionFragment;
     "tokenByIndex(uint256)": FunctionFragment;
-    "setBaseURI(string)": FunctionFragment;
     "paused()": FunctionFragment;
     "ownerOf(uint256)": FunctionFragment;
-    "baseURI()": FunctionFragment;
     "renouncePauser()": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
     "addPauser(address)": FunctionFragment;
@@ -67,12 +68,20 @@ export interface RiraTomozInterface extends utils.Interface {
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "setVariableBaseUri",
+    values: [BigNumberish, string]
+  ): string;
+  encodeFunctionData(
     functionFragment: "totalSupply",
     values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "transferFrom",
     values: [string, string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "variableBaseUri",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "tokenOfOwnerByIndex",
@@ -93,6 +102,10 @@ export interface RiraTomozInterface extends utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "isPauser", values: [string]): string;
   encodeFunctionData(
+    functionFragment: "setTomoUriIndex",
+    values: [BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "exists",
     values: [BigNumberish]
   ): string;
@@ -100,13 +113,11 @@ export interface RiraTomozInterface extends utils.Interface {
     functionFragment: "tokenByIndex",
     values: [BigNumberish]
   ): string;
-  encodeFunctionData(functionFragment: "setBaseURI", values: [string]): string;
   encodeFunctionData(functionFragment: "paused", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "ownerOf",
     values: [BigNumberish]
   ): string;
-  encodeFunctionData(functionFragment: "baseURI", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "renouncePauser",
     values?: undefined
@@ -154,11 +165,19 @@ export interface RiraTomozInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "setVariableBaseUri",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "totalSupply",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "transferFrom",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "variableBaseUri",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -173,15 +192,17 @@ export interface RiraTomozInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "batchMint", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "isPauser", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "setTomoUriIndex",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "exists", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "tokenByIndex",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "setBaseURI", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "paused", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "ownerOf", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "baseURI", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "renouncePauser",
     data: BytesLike
@@ -216,7 +237,8 @@ export interface RiraTomozInterface extends utils.Interface {
   ): Result;
 
   events: {
-    "SetBaseURI(address,string)": EventFragment;
+    "SetVariableBaseUri(address,string)": EventFragment;
+    "SetTomoUriIndex(uint256,uint256)": EventFragment;
     "Paused(address)": EventFragment;
     "Unpaused(address)": EventFragment;
     "PauserAdded(address)": EventFragment;
@@ -228,7 +250,8 @@ export interface RiraTomozInterface extends utils.Interface {
     "ApprovalForAll(address,address,bool)": EventFragment;
   };
 
-  getEvent(nameOrSignatureOrTopic: "SetBaseURI"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "SetVariableBaseUri"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "SetTomoUriIndex"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Paused"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Unpaused"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "PauserAdded"): EventFragment;
@@ -240,12 +263,20 @@ export interface RiraTomozInterface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: "ApprovalForAll"): EventFragment;
 }
 
-export type SetBaseURIEvent = TypedEvent<
+export type SetVariableBaseUriEvent = TypedEvent<
   [string, string],
   { minter: string; uri: string }
 >;
 
-export type SetBaseURIEventFilter = TypedEventFilter<SetBaseURIEvent>;
+export type SetVariableBaseUriEventFilter =
+  TypedEventFilter<SetVariableBaseUriEvent>;
+
+export type SetTomoUriIndexEvent = TypedEvent<
+  [BigNumber, BigNumber],
+  { tokenId: BigNumber; index: BigNumber }
+>;
+
+export type SetTomoUriIndexEventFilter = TypedEventFilter<SetTomoUriIndexEvent>;
 
 export type PausedEvent = TypedEvent<[string], { account: string }>;
 
@@ -337,6 +368,12 @@ export interface RiraTomoz extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    setVariableBaseUri(
+      index: BigNumberish,
+      uri: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     totalSupply(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     transferFrom(
@@ -345,6 +382,11 @@ export interface RiraTomoz extends BaseContract {
       tokenId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    variableBaseUri(
+      index: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
 
     tokenOfOwnerByIndex(
       owner: string,
@@ -385,6 +427,12 @@ export interface RiraTomoz extends BaseContract {
 
     isPauser(account: string, overrides?: CallOverrides): Promise<[boolean]>;
 
+    setTomoUriIndex(
+      tokenId: BigNumberish,
+      index: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     exists(
       tokenId: BigNumberish,
       overrides?: CallOverrides
@@ -395,19 +443,12 @@ export interface RiraTomoz extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
-    setBaseURI(
-      uri: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     paused(overrides?: CallOverrides): Promise<[boolean]>;
 
     ownerOf(
       tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[string]>;
-
-    baseURI(overrides?: CallOverrides): Promise<[string]>;
 
     renouncePauser(
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -486,6 +527,12 @@ export interface RiraTomoz extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  setVariableBaseUri(
+    index: BigNumberish,
+    uri: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
   transferFrom(
@@ -494,6 +541,11 @@ export interface RiraTomoz extends BaseContract {
     tokenId: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
+
+  variableBaseUri(
+    index: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<string>;
 
   tokenOfOwnerByIndex(
     owner: string,
@@ -534,6 +586,12 @@ export interface RiraTomoz extends BaseContract {
 
   isPauser(account: string, overrides?: CallOverrides): Promise<boolean>;
 
+  setTomoUriIndex(
+    tokenId: BigNumberish,
+    index: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   exists(tokenId: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
 
   tokenByIndex(
@@ -541,16 +599,9 @@ export interface RiraTomoz extends BaseContract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
-  setBaseURI(
-    uri: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   paused(overrides?: CallOverrides): Promise<boolean>;
 
   ownerOf(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
-
-  baseURI(overrides?: CallOverrides): Promise<string>;
 
   renouncePauser(
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -623,6 +674,12 @@ export interface RiraTomoz extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    setVariableBaseUri(
+      index: BigNumberish,
+      uri: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
     transferFrom(
@@ -631,6 +688,11 @@ export interface RiraTomoz extends BaseContract {
       tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    variableBaseUri(
+      index: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string>;
 
     tokenOfOwnerByIndex(
       owner: string,
@@ -669,6 +731,12 @@ export interface RiraTomoz extends BaseContract {
 
     isPauser(account: string, overrides?: CallOverrides): Promise<boolean>;
 
+    setTomoUriIndex(
+      tokenId: BigNumberish,
+      index: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     exists(tokenId: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
 
     tokenByIndex(
@@ -676,13 +744,9 @@ export interface RiraTomoz extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    setBaseURI(uri: string, overrides?: CallOverrides): Promise<void>;
-
     paused(overrides?: CallOverrides): Promise<boolean>;
 
     ownerOf(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
-
-    baseURI(overrides?: CallOverrides): Promise<string>;
 
     renouncePauser(overrides?: CallOverrides): Promise<void>;
 
@@ -729,11 +793,20 @@ export interface RiraTomoz extends BaseContract {
   };
 
   filters: {
-    "SetBaseURI(address,string)"(
+    "SetVariableBaseUri(address,string)"(
       minter?: string | null,
       uri?: null
-    ): SetBaseURIEventFilter;
-    SetBaseURI(minter?: string | null, uri?: null): SetBaseURIEventFilter;
+    ): SetVariableBaseUriEventFilter;
+    SetVariableBaseUri(
+      minter?: string | null,
+      uri?: null
+    ): SetVariableBaseUriEventFilter;
+
+    "SetTomoUriIndex(uint256,uint256)"(
+      tokenId?: null,
+      index?: null
+    ): SetTomoUriIndexEventFilter;
+    SetTomoUriIndex(tokenId?: null, index?: null): SetTomoUriIndexEventFilter;
 
     "Paused(address)"(account?: null): PausedEventFilter;
     Paused(account?: null): PausedEventFilter;
@@ -806,6 +879,12 @@ export interface RiraTomoz extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    setVariableBaseUri(
+      index: BigNumberish,
+      uri: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
     transferFrom(
@@ -813,6 +892,11 @@ export interface RiraTomoz extends BaseContract {
       to: string,
       tokenId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    variableBaseUri(
+      index: BigNumberish,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     tokenOfOwnerByIndex(
@@ -854,6 +938,12 @@ export interface RiraTomoz extends BaseContract {
 
     isPauser(account: string, overrides?: CallOverrides): Promise<BigNumber>;
 
+    setTomoUriIndex(
+      tokenId: BigNumberish,
+      index: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     exists(
       tokenId: BigNumberish,
       overrides?: CallOverrides
@@ -864,19 +954,12 @@ export interface RiraTomoz extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    setBaseURI(
-      uri: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     paused(overrides?: CallOverrides): Promise<BigNumber>;
 
     ownerOf(
       tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
-
-    baseURI(overrides?: CallOverrides): Promise<BigNumber>;
 
     renouncePauser(
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -953,6 +1036,12 @@ export interface RiraTomoz extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    setVariableBaseUri(
+      index: BigNumberish,
+      uri: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     totalSupply(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     transferFrom(
@@ -960,6 +1049,11 @@ export interface RiraTomoz extends BaseContract {
       to: string,
       tokenId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    variableBaseUri(
+      index: BigNumberish,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     tokenOfOwnerByIndex(
@@ -1004,6 +1098,12 @@ export interface RiraTomoz extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    setTomoUriIndex(
+      tokenId: BigNumberish,
+      index: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     exists(
       tokenId: BigNumberish,
       overrides?: CallOverrides
@@ -1014,19 +1114,12 @@ export interface RiraTomoz extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    setBaseURI(
-      uri: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
     paused(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     ownerOf(
       tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
-
-    baseURI(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     renouncePauser(
       overrides?: Overrides & { from?: string | Promise<string> }
