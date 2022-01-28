@@ -9,10 +9,10 @@ npx hardhat test
 ```
 
 ## Baobab
-It will be revealed after the sale.
+* It will be revealed after the sale.
 
 ## Mainnet
-It will be revealed after the sale.
+* It will be revealed after the sale.
 
 ## Crosschain
-TODO
+* This will be supported later.
