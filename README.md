@@ -1,4 +1,7 @@
 # rira-contract-tomoz
-Gas-Saving Variable On-Chain Metadata NFT
+Gas-Saving On-Chain Variable Metadata NFT
 
-Working..
+```
+npx hardhat compile
+npx hardhat test
+```
