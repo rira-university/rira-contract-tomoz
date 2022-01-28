@@ -2,17 +2,17 @@
 Gas-Saving On-Chain Variable Metadata NFT
 
 
-##compile&test
+## compile&test
 ```
 npx hardhat compile
 npx hardhat test
 ```
 
-##Baobab
+## Baobab
 It will be revealed after the sale.
 
-##Mainnet
+## Mainnet
 It will be revealed after the sale.
 
-##Crosschain
+## Crosschain
 TODO
